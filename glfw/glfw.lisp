@@ -96,32 +96,31 @@
 
 (defvar *tpref* nil)
 
-(def-window-close-callback window-close-callback (window)
+(glfw:def-window-close-callback window-close-callback (window)
   (declare (ignore window))
 
   (set-window-manager-quitting
-   +window-manager+ (get-time) t tpref))
+   +window-manager+ (glfw:get-time) t tpref))
 
-(def-window-size-callback window-size-callback (window w h)
+(glfw:def-window-size-callback window-size-callback (window w h)
   (declare (ignore window))
 
-  (set-window-size (window 0) (get-time)
+  (set-window-size (window 0) (glfw:get-time)
                    (v!uint w h)
                    tpref))
 
-(def-key-callback key-callback (window key scancode action mod-keys)
+(glfw:def-key-callback key-callback (window key scancode action mod-keys)
   (declare (ignore window scancode mod-keys))
   (let ((kbd (keyboard 0)))
-    (set-keyboard-button kbd key (get-time) (eq action :press) tpref)))
+    (set-keyboard-button kbd key (glfw:get-time) (eq action :press) tpref)))
 
-(def-mouse-button-callback mouse-button-callback (window button action mod-keys)
+(glfw:def-mouse-button-callback mouse-button-callback (window button action mod-keys)
   (declare (ignore window mod-keys))
   (let* ((mouse-id 0)
          (mouse (mouse mouse-id)))
-    (set-mouse-button
-     mouse (glop:button event) (get-time) (eq action :press) tpref)))
+    (set-mouse-button mouse button (get-time) (eq action :press) tpref)))
 
-(def-cursor-pos-callback mouse-moved-callback (window x y)
+(glfw:def-cursor-pos-callback mouse-moved-callback (window x y)
   (declare (ignore window))
   (let* ((mouse-id 0)
          (mouse (mouse mouse-id)))
@@ -133,11 +132,11 @@
 (defvar *event-listeners-installed* nil)
 
 (defun setup-event-listeners ()
-  (set-window-close-callback 'window-close-callback)
-  (set-window-size-callback 'window-size-callback)
-  (set-key-callback 'key-callback)
-  (set-mouse-button-callback 'mouse-button-callback)
-  (set-cursor-position-callback 'mouse-moved-callback)
+  (glfw:set-window-close-callback 'window-close-callback)
+  (glfw:set-window-size-callback 'window-size-callback)
+  (glfw:set-key-callback 'key-callback)
+  (glfw:set-mouse-button-callback 'mouse-button-callback)
+  (glfw:set-cursor-position-callback 'mouse-moved-callback)
 
   (setf *event-listeners-installed* t))
 
@@ -148,7 +147,7 @@
       (setup-event-listeners))
 
   (let ((*tpref* tpref))
-    (poll-events)))
+    (glfw:poll-events)))
 
 ;;--------------------------------------------
 ;; intializing

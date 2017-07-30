@@ -1,7 +1,7 @@
 ;;;; package.lisp
 
-(uiop:define-package #:skitter.sglfw
-    (:use #:cl #:skitter #:rtg-math #:skitter.internals #:glfw)
+(uiop:define-package #:skitter.glfw
+    (:use #:cl #:skitter #:rtg-math #:skitter.internals)
   (:export :collect-glfw-events))
 
 (defpackage #:skitter.glfw.keys
