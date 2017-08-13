@@ -4,7 +4,7 @@
 ;; scancode lookup
 
 (defvar *mouse-button-names*
-  #(:0 :left :middle :right :other0 :other1 :other2 :other3 :other4))
+  #(:left :right :middle :other0 :other1 :other2 :other3 :other4))
 
 (defvar *key-button-names*
   #(:unknown nil nil nil :a :b
@@ -100,25 +100,26 @@
   (declare (ignore window))
 
   (set-window-manager-quitting
-   +window-manager+ (glfw:get-time) t tpref))
+   +window-manager+ (glfw:get-time) t *tpref*))
 
 (glfw:def-window-size-callback window-size-callback (window w h)
   (declare (ignore window))
 
   (set-window-size (window 0) (glfw:get-time)
                    (v!uint w h)
-                   tpref))
+                   *tpref*))
 
 (glfw:def-key-callback key-callback (window key scancode action mod-keys)
   (declare (ignore window scancode mod-keys))
   (let ((kbd (keyboard 0)))
-    (set-keyboard-button kbd key (glfw:get-time) (eq action :press) tpref)))
+    ;; (format t "key-callback ~a~%" key)
+    (set-keyboard-button kbd (cffi:foreign-enum-value '%glfw::key key) (glfw:get-time) (eq action :press) *tpref*)))
 
 (glfw:def-mouse-button-callback mouse-button-callback (window button action mod-keys)
   (declare (ignore window mod-keys))
   (let* ((mouse-id 0)
          (mouse (mouse mouse-id)))
-    (set-mouse-button mouse button (get-time) (eq action :press) tpref)))
+    (set-mouse-button mouse (cffi:foreign-enum-value '%glfw::mouse button) (glfw:get-time) (eq action :press) *tpref*)))
 
 (glfw:def-cursor-pos-callback mouse-moved-callback (window x y)
   (declare (ignore window))
@@ -127,7 +128,7 @@
     (set-mouse-pos mouse
                    (get-internal-real-time)
                    (v! x y)
-                   tpref)))
+                   *tpref*)))
 
 (defvar *event-listeners-installed* nil)
 
@@ -139,6 +140,10 @@
   (glfw:set-cursor-position-callback 'mouse-moved-callback)
 
   (setf *event-listeners-installed* t))
+
+(defun on-event (event &optional tpref)
+  (if (not *event-listeners-installed*)
+      (setup-event-listeners)))
 
 (defun collect-glfw-events (win &optional tpref)
   (declare (ignore win))
